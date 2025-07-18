@@ -1,20 +1,23 @@
 import cudaq
 import numpy as np
+import time
 
 
 from quantum_mcp.mappings import JordanWignerFermion
 from quantum_mcp.operator_pools import uccsd_pool
 from quantum_mcp.preprocess import MolecularHamiltonian
 
+start_time = time.time()
+
 cudaq.set_target("nvidia", option="fp64")
 
-xyz_fpath = '/home/jowens/projects/quantum_computing/co2-ads-vqe/ed/2-ED_wB97X-D.xyz'
-output_csv = open('/home/jowens/projects/quantum_computing/co2-ads-vqe/ed/adapt-energes.csv', 'w')
+xyz_fpath = '/home/de721625/comp_mat/qc/data/ampd/2x-ampd_1x-co2_wB97X-D.xyz'
+output_csv = open('/home/de721625/comp_mat/qc/data/ampd/2x-ampd_1x-co2_wB97X-D_adapt-energes.csv', 'w')
 output_csv.write('norb_cas,nelec_cas,e-adapt,n-pools,n-iter\n')
 # norb_cas = 8
 # nele_cas = 8
 max_iter = 1000
-for active_space_size in [4, 6, 8, 10]:
+for active_space_size in [12]:
     n_orb_cas = active_space_size
     nele_cas = active_space_size
     molecular_data = MolecularHamiltonian(xyz_fpath, '631g', norb_cas=active_space_size, nele_cas=active_space_size)
@@ -287,6 +290,9 @@ for active_space_size in [4, 6, 8, 10]:
                 # Prepare a trial state with the current ansatz.
                 state = cudaq.get_state(kernel, theta, n_qubits, n_electrons, pool_single,
                                         coef_single, pool_double, coef_double)
+end_time = time.time()
+elapsed_time = end_time - start_time
 
+print(f"Elapsed time: ")
 # When using mpi
 # cudaq.mpi.finalize()
