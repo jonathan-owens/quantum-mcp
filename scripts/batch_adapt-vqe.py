@@ -1,6 +1,7 @@
 import cudaq
 import numpy as np
 from pathlib import Path
+import sys
 import time
 
 
@@ -13,13 +14,14 @@ overwrite = False
 
 cudaq.set_target("nvidia", option="fp64")
 
-root_dir = Path('/home/de721625/comp_mat/qc/data/ampd-chain')
-output_csv_fpath = Path('/home/de721625/comp_mat/qc/data/ampd-chain/ampd-chain_adapt-energes.csv')
+root_dir = Path(sys.argv[1])  # Give a folder with the XYZ files to process
+output_csv_fpath = root_dir / f"{root_dir.stem}_energies.csv"
+
 if not output_csv_fpath.exists() or overwrite:
-    output_csv = open('/home/de721625/comp_mat/qc/data/ampd-chain/ampd-chain_adapt-energes.csv', 'w')
+    output_csv = open(output_csv_fpath, 'w')
     output_csv.write('system,natural_orbitals,norb_cas,nelec_cas,e-adapt,n-pools,n-iter,time\n')
 else:
-    output_csv = open('/home/de721625/comp_mat/qc/data/ampd-chain/ampd-chain_adapt-energes.csv', 'a')
+    output_csv = open(output_csv_fpath, 'a')
 
 max_iter = 10000
 for active_space_size in [4, 6, 8, 10, 12]:
