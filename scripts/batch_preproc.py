@@ -4,7 +4,7 @@ from quantum_mcp.preprocess import MolecularHamiltonian
 
 
 def main():
-    active_space_sizes = [4, 6, 8, 10, 12, 14]
+    active_space_sizes = [4, 6, 8]  #, 10, 12, 14]
     basis = '631g'
     # basis = 'sto-3g'
     use_natural_orbitals = True
@@ -15,13 +15,13 @@ def main():
     save_orbitals = True
     overwrite = False
     base_dir = Path("/home/jowens/projects/quantum_computing/co2-ads-vqe/ed")
-    out_csv_fpath = Path("/home/jowens/projects/quantum_computing/co2-ads-vqe/ed/energies.csv")
+    out_csv_fpath = Path("/home/jowens/projects/quantum_computing/co2-ads-vqe/ed/energies_a.csv")
 
     if not overwrite and out_csv_fpath.exists():
         out_csv = open(out_csv_fpath, 'a')
     else:
         out_csv = open(out_csv_fpath, 'w')
-        out_csv.write(f"system,n_e,n_o,basis,nat_orbs,e_hf,e_mp2,e_casci,e_ccsd\n")
+        out_csv.write(f"system,n_e,n_o,basis,nat_orbs,e_hf,e_mp2,e_casci,e_casscf,e_ccsd\n")
 
     for active_space_size in active_space_sizes:
         run_dir = base_dir / f"{active_space_size}e_{active_space_size}o_{orbs_str}"
@@ -35,12 +35,12 @@ def main():
             e_mp2 = mh.run_mp2()
             e_casci = mh.run_casci()
             e_ccsd = mh.run_ccsd()
-            # e_casscf = mh.run_casscf()
+            e_casscf = mh.run_casscf()
             # mh.run_fci_active_space()
             mh.compute_obi_and_tbi()
             mh.write_files()
 
-            out_csv.write(f"{xyz_fpath.stem},{active_space_size},{active_space_size},{basis},{use_natural_orbitals},{mh.hf.e_tot},{e_mp2},{e_casci},{e_ccsd}\n")
+            out_csv.write(f"{xyz_fpath.stem},{active_space_size},{active_space_size},{basis},{use_natural_orbitals},{mh.hf.e_tot},{e_mp2},{e_casci},{e_casscf},{e_ccsd}\n")
             out_csv.flush()
 
 if __name__ == '__main__':
